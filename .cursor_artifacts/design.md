@@ -21,6 +21,7 @@ The system follows a modular, event-driven architecture designed for high perfor
 ```
 
 **Key Relationships**:
+
 - **Load Generator** is the central orchestrator that manages benchmark execution
 - **Metrics Collector** monitors all components and provides real-time feedback
 - **Configuration Manager** provides configuration to all components
@@ -34,20 +35,21 @@ The system follows a modular, event-driven architecture designed for high perfor
 **Purpose**: Manages benchmark datasets with reusable interfaces and efficient loading.
 
 **Key Interfaces**:
+
 ```python
 class DatasetInterface(ABC):
     @abstractmethod
     async def load_dataset(self, path: str) -> Dataset:
         """Load dataset from specified path"""
-    
+
     @abstractmethod
     async def get_sample(self, index: int) -> Sample:
         """Get sample at specified index"""
-    
+
     @abstractmethod
     def __len__(self) -> int:
         """Return dataset size"""
-    
+
     @abstractmethod
     async def validate(self) -> ValidationResult:
         """Validate dataset format and content"""
@@ -56,10 +58,10 @@ class Dataset:
     samples: List[Sample]
     metadata: Dict[str, Any]
     tokenizer: Optional[Tokenizer]
-    
+
     async def preprocess(self) -> None:
         """Preprocess samples for efficient access"""
-    
+
     def get_batch(self, indices: List[int]) -> List[Sample]:
         """Get batch of samples efficiently"""
 
@@ -71,6 +73,7 @@ class Sample:
 ```
 
 **Responsibilities**:
+
 - Dataset loading and caching
 - Sample preprocessing and tokenization
 - Format validation and conversion
@@ -78,6 +81,7 @@ class Sample:
 - Support for multiple dataset formats
 
 **Performance Considerations**:
+
 - Lazy loading for large datasets
 - Memory-mapped file access
 - Efficient tokenization caching
@@ -88,28 +92,29 @@ class Sample:
 **Purpose**: Generates load patterns and manages request distribution to endpoint clients.
 
 **Key Interfaces**:
+
 ```python
 class LoadGenerator:
     def __init__(self, config: LoadConfig):
         self.config = config
         self.dataset = None
         self.endpoint_client = None
-    
+
     async def start_test(self, dataset: Dataset, endpoint_client: EndpointClient) -> None:
         """Start benchmark test with specified dataset and endpoint client"""
-    
+
     async def issue_query(self, query: Query) -> QueryId:
         """Issue a query to the endpoint client"""
-    
+
     async def query_complete(self, query_id: QueryId, result: QueryResult) -> None:
         """Handle query completion"""
-    
+
     async def token_complete(self, query_id: QueryId, token: str, is_final: bool) -> None:
         """Handle token completion for streaming responses"""
-    
+
     async def generate_load(self) -> AsyncGenerator[Query, None]:
         """Generate queries according to load pattern"""
-    
+
     async def distribute_queries(self, queries: List[Query]) -> None:
         """Distribute queries to endpoint client"""
 
@@ -130,6 +135,7 @@ class LoadDistribution(Enum):
 ```
 
 **Responsibilities**:
+
 - Load pattern generation (Poisson, uniform, burst, step)
 - Request timing and distribution
 - Load control and throttling
@@ -137,6 +143,7 @@ class LoadDistribution(Enum):
 - Real-time load adjustment
 
 **Performance Considerations**:
+
 - Efficient random number generation
 - Minimal overhead for request timing
 - Smart batching for high QPS
@@ -147,20 +154,21 @@ class LoadDistribution(Enum):
 **Purpose**: Handles communication with LLM endpoints. The HTTP Client is one implementation of this interface.
 
 **Key Interfaces**:
+
 ```python
 class EndpointClient(ABC):
     @abstractmethod
     async def send_query(self, query: Query) -> QueryResult:
         """Send query to endpoint and return result"""
-    
+
     @abstractmethod
     async def send_streaming_query(self, query: Query) -> AsyncGenerator[StreamChunk, None]:
         """Send streaming query and yield chunks"""
-    
+
     @abstractmethod
     async def create_session(self) -> None:
         """Create session with endpoint"""
-    
+
     @abstractmethod
     async def close_session(self) -> None:
         """Close session and cleanup resources"""
@@ -203,6 +211,7 @@ class StreamChunk:
 ```
 
 **Responsibilities**:
+
 - HTTP request/response handling
 - Connection pooling and management
 - Streaming response processing
@@ -211,6 +220,7 @@ class StreamChunk:
 - Authentication and security
 
 **Performance Considerations**:
+
 - Connection reuse and pooling
 - Efficient streaming processing
 - Minimal memory allocation
@@ -221,22 +231,23 @@ class StreamChunk:
 **Purpose**: Collects, processes, and analyzes performance metrics in real-time.
 
 **Key Interfaces**:
+
 ```python
 class MetricsCollector:
     def __init__(self, config: MetricsConfig):
         self.config = config
         self.metrics = {}
         self.aggregators = {}
-    
+
     async def record_request(self, request: Request, response: Response) -> None:
         """Record request/response metrics"""
-    
+
     async def record_streaming_chunk(self, chunk: StreamChunk) -> None:
         """Record streaming chunk metrics"""
-    
+
     async def get_summary(self) -> MetricsSummary:
         """Get current metrics summary"""
-    
+
     async def export_results(self, format: str) -> bytes:
         """Export results in specified format"""
 
@@ -261,6 +272,7 @@ class MetricsSummary:
 ```
 
 **Responsibilities**:
+
 - Real-time metrics collection
 - Statistical aggregation and analysis
 - Performance bottleneck identification
@@ -268,6 +280,7 @@ class MetricsSummary:
 - Historical data management
 
 **Performance Considerations**:
+
 - Lock-free metrics collection
 - Efficient statistical calculations
 - Minimal memory overhead
@@ -278,22 +291,23 @@ class MetricsSummary:
 **Purpose**: Manages system configuration with validation and runtime updates.
 
 **Key Interfaces**:
+
 ```python
 class ConfigurationManager:
     def __init__(self, config_path: str):
         self.config_path = config_path
         self.config = None
         self.validators = {}
-    
+
     async def load_config(self) -> Config:
         """Load configuration from file"""
-    
+
     async def validate_config(self, config: Config) -> ValidationResult:
         """Validate configuration"""
-    
+
     async def update_config(self, updates: Dict[str, Any]) -> None:
         """Update configuration at runtime"""
-    
+
     async def get_config(self) -> Config:
         """Get current configuration"""
 
@@ -328,6 +342,7 @@ class PerformanceConfig:
 ## Data Flow
 
 ### 1. Benchmark Initialization
+
 1. Configuration Manager loads and validates configuration
 2. Dataset Manager loads and preprocesses dataset
 3. Endpoint Client establishes connection/session
@@ -335,6 +350,7 @@ class PerformanceConfig:
 5. Metrics Collector starts monitoring
 
 ### 2. Query Processing
+
 1. Load Generator generates queries according to pattern
 2. Queries are issued to endpoint client via `issue_query()`
 3. Endpoint client sends queries to endpoints
@@ -343,6 +359,7 @@ class PerformanceConfig:
 6. Metrics are collected for each query/response
 
 ### 3. Metrics Collection
+
 1. Real-time metrics collection during benchmark
 2. Statistical aggregation at configurable intervals
 3. Performance bottleneck identification
@@ -351,24 +368,28 @@ class PerformanceConfig:
 ## Performance Optimizations
 
 ### 1. Memory Management
+
 - Object pooling for frequently allocated objects
 - Memory-mapped file access for large datasets
 - Efficient data structures for high-frequency operations
 - Garbage collection optimization
 
 ### 2. Concurrency
+
 - Async/await throughout the stack
 - Connection pooling for HTTP clients
 - Worker pools for request processing
 - Lock-free data structures where possible
 
 ### 3. Network Optimization
+
 - HTTP/2 support for multiplexing
 - Connection reuse and keep-alive
 - Efficient streaming processing
 - Compression for large payloads
 
 ### 4. I/O Optimization
+
 - Async file I/O operations
 - Efficient tokenization and processing
 - Batch operations for multiple samples
@@ -377,18 +398,21 @@ class PerformanceConfig:
 ## Scalability Considerations
 
 ### 1. Horizontal Scaling
+
 - Distributed load generation across multiple nodes
 - Shared dataset storage and caching
 - Centralized metrics collection
 - Load balancing for HTTP clients
 
 ### 2. Vertical Scaling
+
 - Multi-core CPU utilization
 - Memory-efficient data structures
 - Efficient async I/O operations
 - Optimized algorithms for high-frequency operations
 
 ### 3. Resource Management
+
 - Dynamic resource allocation based on load
 - Efficient connection pooling
 - Memory usage monitoring and control
@@ -397,18 +421,21 @@ class PerformanceConfig:
 ## Error Handling and Resilience
 
 ### 1. Fault Tolerance
+
 - Graceful degradation on endpoint failures
 - Automatic retry with exponential backoff
 - Circuit breaker pattern for failing endpoints
 - Health checking and monitoring
 
 ### 2. Error Recovery
+
 - Automatic recovery from transient failures
 - State persistence for long-running benchmarks
 - Checkpoint and resume functionality
 - Comprehensive error logging and reporting
 
 ### 3. Monitoring and Alerting
+
 - Real-time health monitoring
 - Performance degradation alerts
 - Resource usage monitoring

@@ -18,7 +18,7 @@ alwaysApply: true
 - **No Exceptions**: Failed tests or checks block all commits until resolved
 
 ### 3. Scratchpad Documentation System
-All planning and tracking must be maintained in `.cursor_artifacts/` directory. 
+All planning and tracking must be maintained in `.cursor_artifacts/` directory.
 
 #### Required Files:
 - `.cursor_artifacts/hierarchy.md` - Project folder structure, module organization, and architectural overview

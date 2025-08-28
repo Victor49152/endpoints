@@ -9,19 +9,22 @@ The MLPerf Inference Endpoint benchmarking system is designed for high-performan
 ### 1. Development Environment
 
 **Purpose**: Local development and testing
-**Hardware Requirements**: 
+**Hardware Requirements**:
+
 - **CPU**: 8+ cores (Intel i7/AMD Ryzen 7 or better)
 - **Memory**: 16GB+ RAM
 - **Storage**: 100GB+ SSD
 - **Network**: Gigabit Ethernet or better
 
 **Software Requirements**:
+
 - **OS**: Linux (Ubuntu 22.04+), macOS 12+, Windows 11+
 - **Python**: 3.11+ with virtual environment
 - **Dependencies**: Development dependencies only
 - **Tools**: Git, Docker (optional), IDE support
 
 **Deployment Method**:
+
 - Local Python installation
 - Virtual environment with pip
 - Development dependencies
@@ -33,18 +36,21 @@ The MLPerf Inference Endpoint benchmarking system is designed for high-performan
 
 **Purpose**: Integration testing and performance validation
 **Hardware Requirements**:
+
 - **CPU**: 16+ cores (Intel Xeon/AMD EPYC)
 - **Memory**: 32GB+ RAM
 - **Storage**: 500GB+ NVMe SSD
 - **Network**: 10Gbps Ethernet
 
 **Software Requirements**:
+
 - **OS**: Ubuntu 22.04 LTS
 - **Python**: 3.11+ with system-wide installation
 - **Dependencies**: Full dependency stack
 - **Monitoring**: Prometheus, Grafana (optional)
 
 **Deployment Method**:
+
 - Dedicated testing server
 - System-wide Python installation
 - Automated deployment scripts
@@ -56,18 +62,21 @@ The MLPerf Inference Endpoint benchmarking system is designed for high-performan
 
 **Purpose**: High-performance benchmarking and production workloads
 **Hardware Requirements**:
+
 - **CPU**: 32+ cores (Intel Xeon/AMD EPYC)
 - **Memory**: 64GB+ RAM
 - **Storage**: 1TB+ NVMe SSD
 - **Network**: 25Gbps+ Ethernet or InfiniBand
 
 **Software Requirements**:
+
 - **OS**: Ubuntu 22.04 LTS or RHEL 9
 - **Python**: 3.11+ optimized build
 - **Dependencies**: Production-optimized stack
 - **Monitoring**: Full observability stack
 
 **Deployment Method**:
+
 - Bare metal or high-performance VMs
 - Optimized Python runtime
 - Container orchestration (optional)
@@ -79,19 +88,21 @@ The MLPerf Inference Endpoint benchmarking system is designed for high-performan
 
 **Purpose**: Multi-node load generation and distributed benchmarking
 **Hardware Requirements**:
+
 - **Load Generator Nodes**: 4+ nodes with 16+ cores each
 - **Metrics Aggregator**: Dedicated node with high I/O
 - **Storage Node**: High-performance storage with 100Gbps+ network
 - **Network**: Low-latency, high-bandwidth interconnect
 
 **Software Requirements**:
+
 - **OS**: Ubuntu 22.04 LTS across all nodes
 - **Python**: 3.11+ on all nodes
 - **Orchestration**: Kubernetes or custom orchestration
 - **Networking**: High-performance networking stack
 
-
 **Deployment Method**:
+
 - Kubernetes cluster
 - Custom orchestration scripts
 - Network optimization
@@ -106,6 +117,7 @@ The MLPerf Inference Endpoint benchmarking system is designed for high-performan
 **Disadvantages**: Environment management, dependency conflicts
 
 **Installation Steps**:
+
 ```bash
 # Create virtual environment
 python3.11 -m venv venv
@@ -132,6 +144,7 @@ python -m inference_endpoint --config configs/production.yaml
 **Disadvantages**: Container overhead, debugging complexity
 
 **Dockerfile**:
+
 ```dockerfile
 FROM python:3.11-slim
 
@@ -161,6 +174,7 @@ CMD ["python", "-m", "inference_endpoint", "--config", "configs/production.yaml"
 ```
 
 **Deployment Commands**:
+
 ```bash
 # Build image
 docker build -t inference-endpoint:latest .
@@ -185,6 +199,7 @@ docker run -d \
 **Disadvantages**: Complexity, resource overhead
 
 **Deployment YAML**:
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -201,27 +216,27 @@ spec:
         app: inference-endpoint
     spec:
       containers:
-      - name: benchmark
-        image: inference-endpoint:latest
-        resources:
-          requests:
-            memory: "16Gi"
-            cpu: "8"
-          limits:
-            memory: "32Gi"
-            cpu: "16"
-        env:
-        - name: PYTHONPATH
-          value: "/app/src"
-        - name: CONFIG_PATH
-          value: "/app/configs/production.yaml"
-        volumeMounts:
-        - name: config
-          mountPath: /app/configs
+        - name: benchmark
+          image: inference-endpoint:latest
+          resources:
+            requests:
+              memory: "16Gi"
+              cpu: "8"
+            limits:
+              memory: "32Gi"
+              cpu: "16"
+          env:
+            - name: PYTHONPATH
+              value: "/app/src"
+            - name: CONFIG_PATH
+              value: "/app/configs/production.yaml"
+          volumeMounts:
+            - name: config
+              mountPath: /app/configs
       volumes:
-      - name: config
-        configMap:
-          name: inference-endpoint-config
+        - name: config
+          configMap:
+            name: inference-endpoint-config
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -247,6 +262,7 @@ data:
 **Disadvantages**: Manual management, deployment complexity
 
 **Installation Steps**:
+
 ```bash
 # Install system dependencies
 sudo apt-get update
@@ -293,6 +309,7 @@ sudo systemctl start inference-endpoint
 The configuration management system will be designed and implemented by the development team. This section will be updated once the configuration architecture is finalized.
 
 **Planned Features** (to be implemented):
+
 - Configuration hierarchy and priority system
 - Environment-specific configuration files
 - Dynamic configuration updates
@@ -306,6 +323,7 @@ The configuration management system will be designed and implemented by the deve
 ### 1. CPU Management
 
 **CPU Affinity**:
+
 ```bash
 # Pin process to specific CPU cores
 taskset -c 0-15 python -m inference_endpoint
@@ -315,6 +333,7 @@ numactl --cpunodebind=0 --membind=0 python -m inference_endpoint
 ```
 
 **Process Priority**:
+
 ```bash
 # Set high process priority
 sudo nice -n -20 python -m inference_endpoint
@@ -326,6 +345,7 @@ sudo chrt --rr 99 python -m inference_endpoint
 ### 2. Memory Management
 
 **Memory Limits**:
+
 ```bash
 # Set memory limits
 ulimit -v 50000000  # 50GB virtual memory
@@ -336,6 +356,7 @@ echo 50000000000 > /sys/fs/cgroup/memory/benchmark/memory.limit_in_bytes
 ```
 
 **Memory Optimization**:
+
 - Object pooling for frequently allocated objects
 - Memory-mapped files for large datasets
 - Efficient data structures
@@ -344,6 +365,7 @@ echo 50000000000 > /sys/fs/cgroup/memory/benchmark/memory.limit_in_bytes
 ### 3. Network Management
 
 **Network Optimization**:
+
 ```bash
 # Optimize network settings
 echo 1048576 > /proc/sys/net/core/rmem_max
@@ -352,6 +374,7 @@ echo 1 > /proc/sys/net/ipv4/tcp_tw_reuse
 ```
 
 **Connection Limits**:
+
 ```bash
 # Increase file descriptor limits
 ulimit -n 1000000
@@ -366,12 +389,14 @@ echo 1 > /proc/sys/net/ipv4/tcp_syncookies
 ### 1. Metrics Collection
 
 **Performance Metrics**:
+
 - QPS, latency, throughput
 - Memory usage, CPU utilization
 - Network I/O, disk I/O
 - Error rates and types
 
 **Health Metrics**:
+
 - Process health and uptime
 - Resource utilization
 - Endpoint availability
@@ -380,6 +405,7 @@ echo 1 > /proc/sys/net/ipv4/tcp_syncookies
 ### 2. Logging Strategy
 
 **Log Levels**:
+
 - **DEBUG**: Detailed debugging information
 - **INFO**: General operational information
 - **WARNING**: Warning conditions
@@ -387,6 +413,7 @@ echo 1 > /proc/sys/net/ipv4/tcp_syncookies
 - **CRITICAL**: Critical errors
 
 **Log Outputs**:
+
 - **Console**: Development and debugging
 - **File**: Production logging with rotation
 - **Syslog**: System integration
@@ -395,12 +422,14 @@ echo 1 > /proc/sys/net/ipv4/tcp_syncookies
 ### 3. Alerting and Notifications
 
 **Alert Conditions**:
+
 - Performance degradation
 - High error rates
 - Resource exhaustion
 - Service unavailability
 
 **Notification Channels**:
+
 - Email alerts
 - Slack/Teams notifications
 - PagerDuty integration
@@ -411,12 +440,14 @@ echo 1 > /proc/sys/net/ipv4/tcp_syncookies
 ### 1. Authentication and Authorization
 
 **API Key Management**:
+
 - Secure storage of API keys
 - Key rotation policies
 - Access control and permissions
 - Audit logging
 
 **Network Security**:
+
 - HTTPS/TLS encryption
 - Network segmentation
 - Firewall configuration
@@ -425,12 +456,14 @@ echo 1 > /proc/sys/net/ipv4/tcp_syncookies
 ### 2. Data Protection
 
 **Sensitive Data**:
+
 - API key encryption
 - Dataset anonymization
 - Secure configuration storage
 - Audit trail maintenance
 
 **Access Control**:
+
 - Role-based access control
 - Principle of least privilege
 - Regular access reviews
@@ -441,12 +474,14 @@ echo 1 > /proc/sys/net/ipv4/tcp_syncookies
 ### 1. Data Backup
 
 **Backup Strategy**:
+
 - Configuration file backups
 - Dataset backups
 - Results and metrics backup
 - Log file archiving
 
 **Backup Schedule**:
+
 - Daily incremental backups
 - Weekly full backups
 - Monthly archival backups
@@ -455,12 +490,14 @@ echo 1 > /proc/sys/net/ipv4/tcp_syncookies
 ### 2. Disaster Recovery
 
 **Recovery Procedures**:
+
 - System restoration procedures
 - Data recovery processes
 - Configuration recovery
 - Performance baseline restoration
 
 **Recovery Time Objectives**:
+
 - **RTO**: 4 hours for full system recovery
 - **RPO**: 1 hour for data loss tolerance
 - **Recovery Testing**: Monthly recovery drills
@@ -470,12 +507,14 @@ echo 1 > /proc/sys/net/ipv4/tcp_syncookies
 ### 1. CI/CD Pipeline
 
 **Automated Deployment**:
+
 - Automated testing on commits
 - Performance regression detection
 - Automated deployment to staging
 - Production deployment approval
 
 **Deployment Stages**:
+
 - Development → Testing → Staging → Production
 - Automated testing at each stage
 - Manual approval for production
@@ -484,12 +523,14 @@ echo 1 > /proc/sys/net/ipv4/tcp_syncookies
 ### 2. Infrastructure as Code
 
 **Configuration Management**:
+
 - Ansible playbooks
 - Terraform configurations
 - Docker Compose files
 - Kubernetes manifests
 
 **Version Control**:
+
 - Configuration versioning
 - Change tracking and approval
 - Rollback capabilities
@@ -500,6 +541,7 @@ echo 1 > /proc/sys/net/ipv4/tcp_syncookies
 ### 1. System Tuning
 
 **Kernel Parameters**:
+
 ```bash
 # Optimize for high-performance networking
 echo 1048576 > /proc/sys/net/core/rmem_max
@@ -513,6 +555,7 @@ echo 10 > /proc/sys/vm/dirty_background_ratio
 ```
 
 **Application Tuning**:
+
 - Connection pool sizing
 - Buffer size optimization
 - Thread pool configuration
@@ -521,12 +564,14 @@ echo 10 > /proc/sys/vm/dirty_background_ratio
 ### 2. Network Tuning
 
 **Network Optimization**:
+
 - TCP window scaling
 - Network buffer tuning
 - Interrupt coalescing
 - CPU affinity for network interrupts
 
 **Load Balancing**:
+
 - Round-robin distribution
 - Least connections
 - Weighted distribution

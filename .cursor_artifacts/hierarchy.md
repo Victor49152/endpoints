@@ -186,6 +186,7 @@ inference-endpoint/
 ## Module Organization Principles
 
 ### 1. Separation of Concerns
+
 - **Core**: Central orchestration and common interfaces
 - **Dataset Manager**: Dataset handling and preprocessing
 - **Load Generator**: Load pattern generation and query lifecycle management
@@ -196,6 +197,7 @@ inference-endpoint/
 - **Plugins**: Extensible plugin system
 
 ### 2. Dependency Direction
+
 - **Core** depends on all major components
 - **Components** depend on **Utils** and **Config** (when implemented)
 - **Load Generator** orchestrates **Dataset Manager** and **Endpoint Client**
@@ -203,12 +205,14 @@ inference-endpoint/
 - **Tests** depend on all components for comprehensive coverage
 
 ### 3. Interface Design
+
 - **Abstract Base Classes**: Define contracts for all major components
 - **Protocol Classes**: Type-safe interfaces for Python 3.11+
 - **Dependency Injection**: Loose coupling between components
 - **Plugin Architecture**: Extensible design for new features
 
 ### 4. Performance Considerations
+
 - **Async-First**: All I/O operations are async
 - **Memory Efficiency**: Object pooling and efficient data structures
 - **Concurrency**: Lock-free operations where possible
@@ -217,18 +221,21 @@ inference-endpoint/
 ## Package Structure Details
 
 ### 1. Main Package (`inference_endpoint`)
+
 - **Entry Point**: `main.py` provides the main application entry
 - **CLI**: `cli.py` handles command-line interface
 - **Core**: `core/` contains the main benchmark orchestrator
 - **Types**: `types.py` defines common data structures
 
 ### 2. Dataset Manager (`dataset_manager`)
+
 - **Interface**: Abstract base classes for dataset operations
 - **Loaders**: Format-specific dataset loading implementations
 - **Tokenizers**: Tokenization support for different models
 - **Validators**: Dataset validation and quality checks
 
 ### 3. Load Generator (`load_generator`)
+
 - **Generator**: Main load generation logic with query lifecycle management
 - **Patterns**: Different load pattern implementations (Poisson, uniform, burst, step)
 - **Query Manager**: Query lifecycle tracking (issue_query, query_complete, token_complete)
@@ -236,6 +243,7 @@ inference-endpoint/
 - **API**: start_test(), issue_query(), query_complete(), token_complete()
 
 ### 4. Endpoint Client (`endpoint_client`)
+
 - **Interface**: Abstract endpoint client interface (ABC)
 - **HTTP Implementation**: HTTP client implementation (API TBD by teammates)
 - **Session**: Session management and connection pooling
@@ -244,12 +252,14 @@ inference-endpoint/
 - **Purpose**: Pluggable component for different endpoint types
 
 ### 5. Metrics (`metrics`)
+
 - **Collector**: Real-time metrics collection
 - **Aggregator**: Statistical aggregation and analysis
 - **Storage**: Multiple storage backends
 - **Exporters**: Results export in various formats
 
 ### 6. Configuration (`config`)
+
 - **Manager**: Configuration loading and management (TBD)
 - **Validator**: Configuration validation and error checking (TBD)
 - **Loader**: Configuration loading from various sources (TBD)
@@ -259,28 +269,33 @@ inference-endpoint/
 ## File Naming Conventions
 
 ### 1. Python Files
+
 - **Modules**: Lowercase with underscores (`dataset_manager.py`)
 - **Classes**: PascalCase (`DatasetManager`)
 - **Functions**: Lowercase with underscores (`load_dataset`)
 - **Constants**: Uppercase with underscores (`MAX_QPS`)
 
 ### 2. Configuration Files
+
 - **YAML**: Lowercase with underscores (TBD - to be designed by teammates)
 - **Environment**: Uppercase with underscores (`.env`)
 - **Status**: Configuration format and structure TBD
 
 ### 3. Test Files
+
 - **Unit Tests**: `test_<module_name>.py`
 - **Integration Tests**: `test_<feature>_integration.py`
 - **Performance Tests**: `test_<metric>_performance.py`
 
 ### 4. Documentation Files
+
 - **Markdown**: PascalCase with descriptive names (`API.md`)
 - **Examples**: Lowercase with underscores (`basic_benchmark.py`)
 
 ## Import Organization
 
 ### 1. Standard Library Imports
+
 ```python
 import asyncio
 import json
@@ -289,6 +304,7 @@ from typing import Dict, List, Optional
 ```
 
 ### 2. Third-Party Imports
+
 ```python
 import aiohttp
 import numpy as np
@@ -296,12 +312,14 @@ import yaml
 ```
 
 ### 3. Local Imports
+
 ```python
 from .core.types import Query, QueryResult, QueryId
 from .utils.timing import Timer
 ```
 
 ### 4. Import Order
+
 1. Standard library imports
 2. Third-party imports
 3. Local imports
@@ -310,18 +328,21 @@ from .utils.timing import Timer
 ## Testing Structure
 
 ### 1. Unit Tests
+
 - **Location**: `tests/unit/`
 - **Coverage**: Individual component testing
 - **Mocking**: External dependencies mocked
 - **Isolation**: Tests run independently
 
 ### 2. Integration Tests
+
 - **Location**: `tests/integration/`
 - **Coverage**: Component interaction testing
 - **End-to-End**: Full workflow testing
 - **Performance**: Performance regression testing
 
 ### 3. Performance Tests
+
 - **Location**: `tests/performance/`
 - **Coverage**: Performance benchmarks
 - **Metrics**: QPS, latency, memory usage
@@ -330,6 +351,7 @@ from .utils.timing import Timer
 ## Development Workflow
 
 ### 1. Feature Development
+
 1. Create feature branch from `main`
 2. Implement feature with tests
 3. Run all tests and checks
@@ -338,12 +360,14 @@ from .utils.timing import Timer
 6. Merge to `main`
 
 ### 2. Testing Workflow
+
 1. Unit tests on every commit
 2. Integration tests on pull requests
 3. Performance tests on main branch
 4. Continuous integration automation
 
 ### 3. Documentation Updates
+
 1. Update relevant documentation
 2. Update `cursor_artifacts/` files
 3. Update API documentation
