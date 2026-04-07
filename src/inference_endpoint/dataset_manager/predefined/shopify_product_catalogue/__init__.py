@@ -32,6 +32,28 @@ from .metadata import ProductMetadata
 
 logger = getLogger(__name__)
 
+CALIBRATION_SAMPLE_INDEX = [
+    20232,
+    21162,
+    33584,
+    46825,
+    45190,
+    46143,
+    14189,
+    16658,
+    26406,
+    9565,
+    33733,
+    31057,
+    47465,
+    33503,
+    42293,
+    7768,
+    1962,
+    39746,
+    13568,
+    22527,
+]
 
 def _process_sample_to_row(sample: dict[str, Any]) -> dict[str, Any]:
     """Convert a single HF dataset sample to a row dict for parquet storage.
@@ -148,6 +170,8 @@ class ShopifyProductCatalogue(
             desc=f"Converting images ({split_key})",
             unit="rows",
         ):
+            if i in CALIBRATION_SAMPLE_INDEX:
+                continue
             sample = ds[i]
             all_rows.append(_process_sample_to_row(sample))
 
