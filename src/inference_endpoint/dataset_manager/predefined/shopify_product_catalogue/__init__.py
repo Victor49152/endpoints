@@ -32,7 +32,7 @@ from .metadata import ProductMetadata
 
 logger = getLogger(__name__)
 
-CALIBRATION_SAMPLE_INDEX = {
+DEFAULT_CALIBRATION_SAMPLE_INDEX = {
     20232,
     21162,
     33584,
@@ -124,6 +124,7 @@ class ShopifyProductCatalogue(
         force: bool = False,
         token: str | None = None,
         revision: str = "main",
+        calibration_sample_index: set[int] | None = DEFAULT_CALIBRATION_SAMPLE_INDEX,
         **kwargs: Any,
     ) -> pd.DataFrame:
         """Generate the Shopify product catalogue dataset.
@@ -171,7 +172,7 @@ class ShopifyProductCatalogue(
             desc=f"Converting images ({split_key})",
             unit="rows",
         ):
-            if i in CALIBRATION_SAMPLE_INDEX:
+            if calibration_sample_index is not None and i in calibration_sample_index:
                 continue
             sample = ds[i]
             all_rows.append(_process_sample_to_row(sample))
