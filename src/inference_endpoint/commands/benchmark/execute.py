@@ -145,19 +145,64 @@ class BenchmarkContext:
     def enable_streaming(self) -> bool:
         return self.config.model_params.streaming == StreamingMode.ON
 
+def _hf_repo_id_from_cache_path(path: Path) -> str | None:
+    """Extract a HuggingFace repo ID from an HF local cache path.
+
+    HF cache naming convention: {cache_dir}/models--{namespace}--{model}/snapshots/{commit}
+    The repo ID is reconstructed by joining namespace and model with '/'.
+
+    Example:
+        .../models--nvidia--Qwen3-VL-235B-A22B-Instruct-NVFP4.../snapshots/abc123
+        → "nvidia/Qwen3-VL-235B-A22B-Instruct-NVFP4..."
+    """
+    for part in path.parts:
+        if part.startswith("models--"):
+            # Strip "models--", then split on first "--" to separate namespace/model
+            ns_model = part[len("models--") :].split("--", 1)
+            if len(ns_model) == 2 and ns_model[0] and ns_model[1]:
+                return f"{ns_model[0]}/{ns_model[1]}"
+    return None
+
 
 def _load_tokenizer(model_name: str) -> AutoTokenizer | None:
-    """Load HuggingFace tokenizer, warn on failure."""
-    try:
-        logger.info(f"Loading tokenizer for model: {model_name}")
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
-        logger.info("Tokenizer loaded successfully")
-        return tokenizer
-    except Exception as e:
-        logger.warning(f"Failed to load tokenizer for {model_name}: {e}")
-        logger.warning("Continuing without tokenizer (report metrics may be limited)")
-        return None
+    """Load HuggingFace tokenizer, warn on failure.
 
+    Resolution order:
+    1. If model_name is an existing local directory, load from disk.
+    2. If model_name is an absolute path that doesn't exist locally (e.g. a
+       container path used from the host), try to extract the HF repo ID from
+       the HF cache directory naming convention and load from the Hub.
+    3. Otherwise treat model_name as a HF repo ID and load from the Hub.
+    """
+    logger.info(f"Loading tokenizer for model: {model_name}")
+    candidate = Path(model_name)
+
+    # Build ordered list of sources to try
+    sources: list[str | Path] = []
+    if candidate.is_absolute():
+        if candidate.exists():
+            sources.append(candidate)  # Local path exists — use it directly
+        # Also try extracting the HF repo ID from the cache path. This handles
+        # container/remote paths that don't exist on the host running the benchmark.
+        repo_id = _hf_repo_id_from_cache_path(candidate)
+        if repo_id:
+            sources.append(repo_id)
+    if not sources:
+        sources.append(model_name)  # Plain HF repo ID or relative local path
+
+    last_exc: Exception | None = None
+    for source in sources:
+        try:
+            tokenizer = AutoTokenizer.from_pretrained(source)
+            logger.info(f"Tokenizer loaded successfully (source: {source})")
+            return tokenizer
+        except Exception as e:
+            logger.debug(f"Tokenizer load attempt failed for {source!r}: {e}")
+            last_exc = e
+
+    logger.warning(f"Failed to load tokenizer for {model_name}: {last_exc}")
+    logger.warning("Continuing without tokenizer (report metrics may be limited)")
+    return None
 
 def _load_datasets(
     config: BenchmarkConfig, report_dir: Path
