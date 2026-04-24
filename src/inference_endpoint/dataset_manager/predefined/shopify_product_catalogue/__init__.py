@@ -55,7 +55,6 @@ CALIBRATION_SAMPLE_INDEX = [
     22527,
 ]
 
-
 def _process_sample_to_row(sample: dict[str, Any]) -> dict[str, Any]:
     """Convert a single HF dataset sample to a row dict for parquet storage.
 
