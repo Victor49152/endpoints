@@ -21,7 +21,7 @@ from abc import ABC
 from io import BytesIO
 from logging import getLogger
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 import pandas as pd
 from datasets import load_dataset
@@ -71,8 +71,8 @@ class BaseShopifyProductCatalogue(Dataset, ABC):
     """Abstract base class for Shopify product catalogue datasets.
 
     Contains shared logic for downloading and processing product catalogue
-    data from HuggingFace. Subclasses only need to define REPO_ID and
-    dataset_id.
+    data from HuggingFace. Subclasses only need to define REPO_ID,
+    dataset_id, and optionally DEFAULT_SPLITS.
     """
 
     COLUMN_NAMES = [
@@ -91,6 +91,9 @@ class BaseShopifyProductCatalogue(Dataset, ABC):
     REPO_ID: str
     """HuggingFace dataset repository ID. Must be set by subclass."""
 
+    DEFAULT_SPLITS: ClassVar[list[str]] = ["train", "test"]
+    """Default splits to load when split is not specified. Override in subclass if needed."""
+
     @classmethod
     def generate(
         cls,
@@ -108,7 +111,7 @@ class BaseShopifyProductCatalogue(Dataset, ABC):
 
         Args:
             datasets_dir: Directory to save transformed dataset.
-            split: Splits to load (e.g. ["train", "test"]). Defaults to ["train", "test"].
+            split: Splits to load (e.g. ["train", "test"]). Defaults to DEFAULT_SPLITS.
             force: Regenerate even if file exists.
             token: HuggingFace token for gated datasets.
             revision: Dataset revision/branch. Defaults to "main".
@@ -118,7 +121,7 @@ class BaseShopifyProductCatalogue(Dataset, ABC):
             product_image_format, potential_product_categories.
         """
         if split is None:
-            split = ["train", "test"]
+            split = cls.DEFAULT_SPLITS
         split_key = "+".join(split)
         filename = f"{cls.DATASET_ID}_{split_key}.parquet"
         dst_path = datasets_dir / cls.DATASET_ID / split_key / filename
@@ -181,9 +184,13 @@ class ShopifyProductCatalogue8k(
 
     Each sample includes product image, title, description, and candidate categories.
     Compatible with OpenAI multimodal adapter (prompt/system with vision content).
+
+    Note: This dataset only has a train split (no test split).
     """
 
     REPO_ID = "nvidia/Shopify-product-catalogue-8k"
+
+    DEFAULT_SPLITS = ["train"]
 
 
 __all__ = [

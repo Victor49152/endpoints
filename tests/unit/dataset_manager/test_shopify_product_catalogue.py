@@ -392,6 +392,11 @@ class TestShopifyProductCatalogue8k:
         assert ShopifyProductCatalogue8k.PRESETS is ShopifyProductCatalogue.PRESETS
         assert hasattr(ShopifyProductCatalogue8k.PRESETS, "q3vl")
 
+    def test_default_splits_is_train_only(self) -> None:
+        """8k variant defaults to train split only (no test split available)."""
+        assert ShopifyProductCatalogue8k.DEFAULT_SPLITS == ["train"]
+        assert ShopifyProductCatalogue.DEFAULT_SPLITS == ["train", "test"]
+
     def test_generate_uses_correct_repo_id(
         self, tmp_path: Path, mock_hf_dataset: list[dict]
     ) -> None:
