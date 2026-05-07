@@ -25,7 +25,7 @@ datasets:
 settings:
   runtime:
     min_duration_ms: 600000 # 10 minute
-    n_samples_to_issue: 100 # Limit queries for testing (remove or increase for full run)
+    n_samples_to_issue: 48289 # Full dataset size for this benchmark; lower this (e.g., 1000 or 100) for quick tests, or remove for an unconstrained full run
     scheduler_random_seed: 42 # For Poisson/distribution sampling
     dataloader_random_seed: 42 # For dataset shuffling
 
@@ -33,7 +33,7 @@ settings:
     type: "max_throughput"
 
   client:
-    num_workers: 2
+    num_workers: 5
     transport:
       type: zmq
       recv_buffer_size: 16777216
