@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Shopify product catalogue dataset for multimodal product taxonomy classification."""
+"""Shopify product catalogue datasets for multimodal product taxonomy classification."""
 
 import base64
 import json
+from abc import ABC
 from io import BytesIO
 from logging import getLogger
 from pathlib import Path
@@ -66,16 +67,12 @@ def _process_sample_to_row(sample: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-class ShopifyProductCatalogue(
-    Dataset,
-    dataset_id="shopify_product_catalogue",
-):
-    """Shopify product catalogue: multimodal benchmark for product taxonomy classification.
+class BaseShopifyProductCatalogue(Dataset, ABC):
+    """Abstract base class for Shopify product catalogue datasets.
 
-    Reference: https://huggingface.co/datasets/Shopify/product-catalogue
-
-    Each sample includes product image, title, description, and candidate categories.
-    Compatible with OpenAI multimodal adapter (prompt/system with vision content).
+    Contains shared logic for downloading and processing product catalogue
+    data from HuggingFace. Subclasses only need to define REPO_ID and
+    dataset_id.
     """
 
     COLUMN_NAMES = [
@@ -91,7 +88,8 @@ class ShopifyProductCatalogue(
 
     PRESETS = presets
 
-    REPO_ID = "Shopify/product-catalogue"
+    REPO_ID: str
+    """HuggingFace dataset repository ID. Must be set by subclass."""
 
     @classmethod
     def generate(
@@ -139,7 +137,7 @@ class ShopifyProductCatalogue(
 
         ds = load_dataset(cls.REPO_ID, split=split_key, **load_options)
         logger.info(
-            f"Loaded {len(ds)} samples from Shopify product catalogue ({split_key})"
+            f"Loaded {len(ds)} samples from {cls.REPO_ID} ({split_key})"
         )
 
         all_rows: list[dict[str, Any]] = []
@@ -158,4 +156,38 @@ class ShopifyProductCatalogue(
         return df
 
 
-__all__ = ["ProductMetadata", "ShopifyProductCatalogue"]
+class ShopifyProductCatalogue(
+    BaseShopifyProductCatalogue,
+    dataset_id="shopify_product_catalogue",
+):
+    """Shopify product catalogue: multimodal benchmark for product taxonomy classification.
+
+    Reference: https://huggingface.co/datasets/Shopify/product-catalogue
+
+    Each sample includes product image, title, description, and candidate categories.
+    Compatible with OpenAI multimodal adapter (prompt/system with vision content).
+    """
+
+    REPO_ID = "Shopify/product-catalogue"
+
+
+class ShopifyProductCatalogue8k(
+    BaseShopifyProductCatalogue,
+    dataset_id="shopify_product_catalogue_8k",
+):
+    """Shopify product catalogue 8k: 8,000 sample variant for product taxonomy classification.
+
+    Reference: https://huggingface.co/datasets/nvidia/Shopify-product-catalogue-8k
+
+    Each sample includes product image, title, description, and candidate categories.
+    Compatible with OpenAI multimodal adapter (prompt/system with vision content).
+    """
+
+    REPO_ID = "nvidia/Shopify-product-catalogue-8k"
+
+
+__all__ = [
+    "ProductMetadata",
+    "ShopifyProductCatalogue",
+    "ShopifyProductCatalogue8k",
+]

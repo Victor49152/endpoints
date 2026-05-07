@@ -110,8 +110,9 @@ configs. Each predefined dataset ships with default transforms for supported mod
 | `cnndailymail`              | CNN/DailyMail | Summarization                              |
 | `open_orca`                 | OpenOrca      | General instruction                        |
 | `livecodebench`             | LiveCodeBench | Code generation; requires additional setup |
-| `shopify_product_catalogue` | Shopify       | E-commerce Q&A (q3vl)                      |
-| `random`                    | Synthetic     | Generated prompts for throughput testing   |
+| `shopify_product_catalogue`    | Shopify       | E-commerce Q&A (q3vl)                      |
+| `shopify_product_catalogue_8k` | Shopify       | 8k sample variant of Shopify product catalogue (q3vl) |
+| `random`                       | Synthetic     | Generated prompts for throughput testing   |
 
 ## Preset System
 
