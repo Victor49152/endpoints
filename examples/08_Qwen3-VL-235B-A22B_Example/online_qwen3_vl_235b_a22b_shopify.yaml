@@ -14,6 +14,13 @@ model_params:
 datasets:
   - name: shopify_product_catalogue::q3vl
     type: "performance"
+  - name: shopify_product_catalogue::q3vl
+    type: "accuracy"
+    accuracy_config:
+      eval_method: "shopify_category_f1"
+      ground_truth: "ground_truth_category"
+      extractor: "identity_extractor"
+      num_repeats: 1
 
 settings:
   runtime:
@@ -24,7 +31,7 @@ settings:
 
   load_pattern:
     type: "poisson"
-    target_qps: 6.5
+    target_qps: 6
 
   client:
     num_workers: 5

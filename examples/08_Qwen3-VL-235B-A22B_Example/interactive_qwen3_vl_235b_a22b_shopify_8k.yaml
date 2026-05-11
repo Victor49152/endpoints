@@ -16,20 +16,26 @@ model_params:
 datasets:
   - name: shopify_product_catalogue_8k::q3vl
     type: "performance"
+  - name: shopify_product_catalogue_8k::q3vl
+    type: "accuracy"
+    accuracy_config:
+      eval_method: "shopify_category_f1"
+      ground_truth: "ground_truth_category"
+      extractor: "identity_extractor"
+      num_repeats: 1
 
 settings:
   runtime:
-    min_duration_ms: 60000 # 1 minute for quick tests
-    n_samples_to_issue: 100 # Small batch for interactive testing (increase to 8000 for full run)
+    min_duration_ms: 600000 # 10 minute
     scheduler_random_seed: 42
     dataloader_random_seed: 42
 
   load_pattern:
     type: "poisson"
-    target_qps: 6.5
+    target_qps: 5
 
   client:
-    num_workers: 2
+    num_workers: 5
     transport:
       type: zmq
       recv_buffer_size: 16777216
