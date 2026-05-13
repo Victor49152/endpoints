@@ -15,10 +15,6 @@
 
 """Unit tests for Shopify product catalogue dataset initialization and transforms."""
 
-import pytest
-
-pytestmark = pytest.mark.unit
-
 import base64
 import json
 from io import BytesIO
@@ -27,6 +23,7 @@ from typing import Any
 from unittest.mock import patch
 
 import pandas as pd
+import pytest
 from inference_endpoint.dataset_manager.dataset import Dataset
 from inference_endpoint.dataset_manager.predefined.shopify_product_catalogue import (
     BaseShopifyProductCatalogue,
@@ -38,6 +35,8 @@ from inference_endpoint.dataset_manager.predefined.shopify_product_catalogue.pre
     q3vl,
 )
 from PIL import Image
+
+pytestmark = pytest.mark.unit
 
 
 def _make_pil_image(image_format: str = "JPEG") -> Image.Image:
