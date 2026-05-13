@@ -27,12 +27,12 @@ from typing import Any
 from unittest.mock import patch
 
 import pandas as pd
+from inference_endpoint.dataset_manager.dataset import Dataset
 from inference_endpoint.dataset_manager.predefined.shopify_product_catalogue import (
     BaseShopifyProductCatalogue,
     ShopifyProductCatalogue,
     ShopifyProductCatalogue8k,
 )
-from inference_endpoint.dataset_manager.dataset import Dataset
 from inference_endpoint.dataset_manager.predefined.shopify_product_catalogue.presets import (
     ShopifyMultimodalFormatter,
     q3vl,
@@ -372,7 +372,9 @@ class TestShopifyProductCatalogue8k:
 
     def test_has_correct_repo_id(self) -> None:
         """REPO_ID points to nvidia/Shopify-product-catalogue-8k."""
-        assert ShopifyProductCatalogue8k.REPO_ID == "nvidia/Shopify-product-catalogue-8k"
+        assert (
+            ShopifyProductCatalogue8k.REPO_ID == "nvidia/Shopify-product-catalogue-8k"
+        )
 
     def test_has_correct_dataset_id(self) -> None:
         """DATASET_ID is shopify_product_catalogue_8k."""
@@ -381,11 +383,17 @@ class TestShopifyProductCatalogue8k:
     def test_registered_in_dataset_predefined(self) -> None:
         """Class is auto-registered in Dataset.PREDEFINED."""
         assert "shopify_product_catalogue_8k" in Dataset.PREDEFINED
-        assert Dataset.PREDEFINED["shopify_product_catalogue_8k"] is ShopifyProductCatalogue8k
+        assert (
+            Dataset.PREDEFINED["shopify_product_catalogue_8k"]
+            is ShopifyProductCatalogue8k
+        )
 
     def test_shares_column_names_with_base(self) -> None:
         """Column names are identical to ShopifyProductCatalogue."""
-        assert ShopifyProductCatalogue8k.COLUMN_NAMES == ShopifyProductCatalogue.COLUMN_NAMES
+        assert (
+            ShopifyProductCatalogue8k.COLUMN_NAMES
+            == ShopifyProductCatalogue.COLUMN_NAMES
+        )
 
     def test_shares_presets_with_base(self) -> None:
         """Presets are shared with base class (q3vl works)."""
@@ -430,7 +438,12 @@ class TestShopifyProductCatalogue8k:
                 force=True,
             )
         # Verify cache path uses shopify_product_catalogue_8k
-        expected_path = tmp_path / "shopify_product_catalogue_8k" / "train" / "shopify_product_catalogue_8k_train.parquet"
+        expected_path = (
+            tmp_path
+            / "shopify_product_catalogue_8k"
+            / "train"
+            / "shopify_product_catalogue_8k_train.parquet"
+        )
         assert expected_path.exists()
 
     def test_get_dataloader_with_q3vl_preset(self, tmp_path: Path) -> None:

@@ -24,8 +24,9 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 import pandas as pd
-from datasets import load_dataset
 from tqdm import tqdm
+
+from datasets import load_dataset
 
 from ...dataset import Dataset
 from . import presets
@@ -139,9 +140,7 @@ class BaseShopifyProductCatalogue(Dataset, ABC):
             load_options["revision"] = revision
 
         ds = load_dataset(cls.REPO_ID, split=split_key, **load_options)
-        logger.info(
-            f"Loaded {len(ds)} samples from {cls.REPO_ID} ({split_key})"
-        )
+        logger.info(f"Loaded {len(ds)} samples from {cls.REPO_ID} ({split_key})")
 
         all_rows: list[dict[str, Any]] = []
         for i in tqdm(
