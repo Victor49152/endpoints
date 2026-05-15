@@ -30,7 +30,7 @@ settings:
 
   load_pattern:
     type: "poisson"
-    target_qps: 5
+    target_qps: 3
 
   client:
     num_workers: 5
